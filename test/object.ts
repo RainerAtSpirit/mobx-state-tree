@@ -26,6 +26,15 @@ const createTestFactories = () => {
         }
     })
 
+    const ComplexComputedFactory = types.model({
+        width: 100,
+        height: 200,
+        stringifiedJSON: '{"a":{"b":{"c":1,"d":2}}}',
+        get jsonObj(){
+            return JSON.parse(this.stringifiedJSON)
+        }
+    })
+
     const BoxFactory = types.model({
         width: 0,
         height: 0
@@ -35,7 +44,7 @@ const createTestFactories = () => {
         color: "#FFFFFF"
     })
 
-    return {Factory, ComputedFactory, BoxFactory, ColorFactory}
+    return {Factory, ComputedFactory, BoxFactory, ColorFactory, ComplexComputedFactory}
 }
 
 // === FACTORY TESTS ===
@@ -221,6 +230,26 @@ test("it should compose factories", (t) => {
     const ComposedFactory = types.extend(BoxFactory, ColorFactory)
 
     t.deepEqual(getSnapshot(ComposedFactory.create()), {width: 0, height: 0, color: "#FFFFFF"})
+})
+
+test("it should compose factories with simple computeds return types", (t) => {
+    const {BoxFactory, ComputedFactory} = createTestFactories()
+    const ComposedFactory = types.extend(BoxFactory, ComputedFactory)
+
+    t.deepEqual(getSnapshot(ComposedFactory.create()), {width: 100, height: 200, area: 20000})
+})
+
+test("it should not throw with complex computeds", (t) => {
+    const {ComplexComputedFactory} = createTestFactories()
+  
+    t.deepEqual(getSnapshot(ComplexComputedFactory.create()), {width: 100, height: 200, stringifiedJSON: "{\"a\":{\"b\":{\"c\":1,\"d\":2}}}"})
+})
+
+test("it should compose factories with complex computeds return types", (t) => {
+    const {BoxFactory, ComplexComputedFactory} = createTestFactories()
+    const ComposedFactory = types.extend(BoxFactory, ComplexComputedFactory)
+    
+    t.deepEqual(getSnapshot(ComposedFactory.create()), {width: 100, height: 200, stringifiedJSON: '{"a":{"b":{"c":1,"d":2}}}'})
 })
 
 
