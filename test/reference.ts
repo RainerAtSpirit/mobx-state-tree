@@ -1,4 +1,4 @@
-import { types, getSnapshot, applySnapshot } from "../"
+import { types, getSnapshot, applySnapshot } from "../src"
 import { test } from "ava"
 
 
