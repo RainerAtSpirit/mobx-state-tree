@@ -1,7 +1,7 @@
-import {observable, transaction, action, autorun, spy} from 'mobx';
-import {types, getSnapshot, applySnapshot, getParent, hasParent, onPatch} from 'mobx-state-tree';
+import { observable, transaction, action, autorun, spy } from 'mobx';
+import { types, getSnapshot, applySnapshot, getParent, hasParent, onPatch } from 'mobx-state-tree';
 
-import {randomUuid} from '../utils';
+import { randomUuid } from '../utils';
 
 export const Box = types.model("Box", {
     id: types.identifier(),
@@ -15,15 +15,15 @@ export const Box = types.model("Box", {
         if (!hasParent(this))
             return false
         return getParent(getParent(this)).selection === this
-    },
-    move(dx, dy) {
-        this.x += dx
-        this.y += dy
-    },
-    setName(newName) {
-        this.name = newName
-    }
-})
+    }}, {
+        move(dx, dy) {
+            this.x += dx
+            this.y += dy
+        },
+        setName(newName) {
+            this.name = newName
+        }
+    })
 
 export const Arrow = types.model("Arrow", {
     id: types.identifier(),
@@ -34,7 +34,7 @@ export const Arrow = types.model("Arrow", {
 export const Store = types.model("Store", {
     boxes: types.map(Box),
     arrows: types.array(Arrow),
-    selection: types.reference(Box, "./boxes"),
+    selection: types.reference(Box, "./boxes")},{
     addBox(name, x, y) {
         const box = Box.create({ name, x, y, id: randomUuid() })
         this.boxes.put(box)
@@ -58,14 +58,14 @@ export const Store = types.model("Store", {
     The store that holds our domain: boxes and arrows
 */
 const store = Store.create({
-    "boxes":{
-        "ce9131ee-f528-4952-a012-543780c5e66d": {"id":"ce9131ee-f528-4952-a012-543780c5e66d","name":"Rotterdam","x":100,"y":100},
-        "14194d76-aa31-45c5-a00c-104cc550430f": {"id":"14194d76-aa31-45c5-a00c-104cc550430f","name":"Bratislava","x":650,"y":300}
+    "boxes": {
+        "ce9131ee-f528-4952-a012-543780c5e66d": { "id": "ce9131ee-f528-4952-a012-543780c5e66d", "name": "Rotterdam", "x": 100, "y": 100 },
+        "14194d76-aa31-45c5-a00c-104cc550430f": { "id": "14194d76-aa31-45c5-a00c-104cc550430f", "name": "Bratislava", "x": 650, "y": 300 }
     },
-    "arrows":[
-        {"id":"7b5d33c1-5e12-4278-b1c5-e4ae05c036bd","from":"ce9131ee-f528-4952-a012-543780c5e66d","to":"14194d76-aa31-45c5-a00c-104cc550430f"}
+    "arrows": [
+        { "id": "7b5d33c1-5e12-4278-b1c5-e4ae05c036bd", "from": "ce9131ee-f528-4952-a012-543780c5e66d", "to": "14194d76-aa31-45c5-a00c-104cc550430f" }
     ],
-    "selection":""
+    "selection": ""
 })
 
 export default store;
@@ -76,7 +76,7 @@ window.store = store; // for demo
 */
 export function generateStuff(amount) {
     transaction(() => {
-        for(var i = 0; i < amount; i++) {
+        for (var i = 0; i < amount; i++) {
             store.addBox('#' + i, Math.random() * window.innerWidth * 0.5, Math.random() * window.innerHeight);
             store.addArrow(
                 store.boxes[Math.floor(Math.random() * store.boxes.length)].id,
